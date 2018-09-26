@@ -16,18 +16,22 @@ local mt = { __index = _M }
 
 function _M.new(self, p)
     p = p or {}
+    local mode             = p["mode"] or "whitelist"
     local mask_part_string = p["mask_part_string"] or "*"
     local mask_part_length = p["mask_part_length"] or 3
-    local mask_all_string  = p["mask_all_string"] or "-"
+    local mask_fill_string = p["mask_fill_string"] or "-"
     local mask_hash_seed   = p["mask_hash_seed"] or "seeeeeed"
-    local mask_fields      = p["mask_fields"] or {}
+    local max_field_length = p["max_field_length"] or 512
+    local fields           = p["fields"] or {}
 
     return setmetatable({
+        mode             = mode,
         mask_part_string = mask_part_string,
         mask_part_length = mask_part_length,
-        mask_all_string  = mask_all_string,
+        mask_fill_string = mask_fill_string,
         mask_hash_seed   = mask_hash_seed,
-        mask_fields      = mask_fields,
+        max_field_length = max_field_length,
+        fields           = fields,
     }, mt)
 end
 
@@ -76,22 +80,60 @@ end
 
 function _M._mask(self, data)
   local ret = {}
-  for key, value in pairs(data) do
-    local mask_row = data[key]
 
-    local exitst_op = self.mask_fields[key] or ""
-    if exitst_op == "part" then
-      mask_row = self:_mask_part(value)
-    elseif exitst_op == "all" then
-      mask_row = self.mask_all_string
-    elseif exitst_op == "hash" then
-      mask_row = self:_mask_hash(value)
-    elseif exitst_op == "trim" then
-      mask_row = nil
+  -- convert table
+  --
+  --  fields = {
+  --    ["origin"] = {"attr1", "attr2"},
+  --    ["part"]   = {"attr3"},
+  --  }
+  --
+  --  to
+  --
+  --  fields = {
+  --    ["attr1"] = "origin",
+  --    ["attr2"] = "origin",
+  --    ["attr3"] = "part",
+  --  }
+  local convert_fields = {}
+  if self.mode == "blacklist" then
+    -- target all keys
+    for key, value in pairs(data) do
+      convert_fields[key] = "origin"
+    end
+  end
+
+  -- convert
+  for key, fields in pairs(self.fields) do
+    fields = fields or {}
+    for j, field in ipairs(fields) do
+      convert_fields[field] = key
+    end
+  end
+
+  -- masked
+  for field, op in pairs(convert_fields) do
+    local mask_row = nil
+
+    local param = data[field]
+    if param then
+      if op == "origin" then
+        mask_row = param
+      elseif op == "part" then
+        mask_row = self:_mask_part(param)
+      elseif op == "hash" then
+        mask_row = self:_mask_hash(param)
+      elseif op == "fill" then
+        -- for blacklist
+        mask_row = self.mask_fill_string
+      end
     end
 
     if mask_row ~= nil then
-      ret[key] = mask_row
+      if (op == "origin" or op == "part") and string.len(mask_row) > self.max_field_length then
+        mask_row = mask_row:sub(1, self.max_field_length-3) .. "..."
+      end
+      ret[field] = mask_row
     end
   end
 

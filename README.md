@@ -19,15 +19,17 @@ server {
         content_by_lua_block {
             local querymask = require "resty.querymask"
             q = querymask:new({
+                mode = "writelist",
                 mask_part_string = "*",
                 mask_part_length = 3,
-                mask_all_string  = "*MASK*",
+                mask_fill_string = "*MASK*",
                 mask_hash_seed   = "hogefugapiyo",
-                mask_fields = {
-                  ["attr1"] = "part",
-                  ["attr2"] = "all",
-                  ["attr3"] = "hash",
-                  ["attr4"] = "trim",
+                max_field_length = 512,
+                fields = {
+                  "origin" = {"attr1", "attr2"},
+                  "part"   = {"attr3"},
+                  "fill"   = {"attr4"},
+                  "hash"   = {"attr5"},
                 }
             })
             -- get table
@@ -39,9 +41,9 @@ server {
 
             ngx.say(masked_query_string)
             -- (example)
-            --   curl 'http://localhost/mask?attr1=hogeeee&attr2=fugaaaa&attr3=piyoooo&attr4=fooooo'
+            --   curl 'http://localhost/mask?attr1=hogeeee&attr2=fugaaaa&attr3=piyoooo&attr4=fooooo&attr5=barrrrr'
             -- 
-            --   attr1=hog****&attr2=*MASK*&attr3=eoroiaweuroajejrfalwjreoaijrejwaerwaer'
+            --   attr1=hogeeee&attr2=fugaaaa&attr3=piy****&attr4=*MASK*&attr5=eoroiaweuroajejrfalwjreoaijrejwaerwaer'
         }
     }
 }
@@ -69,15 +71,17 @@ server {
         content_by_lua_block {
             local querymask = require "resty.querymask"
             q = querymask:new({
+                mode = "writelist",
                 mask_part_string = "*",
                 mask_part_length = 3,
-                mask_all_string  = "*MASK*",
+                mask_fill_string = "*MASK*",
                 mask_hash_seed   = "hogefugapiyo",
-                mask_fields = {
-                  ["attr1"] = "part",
-                  ["attr2"] = "all",
-                  ["attr3"] = "hash",
-                  ["attr4"] = "trim",
+                max_field_length = 512,
+                fields = {
+                  "origin" = {"attr1", "attr2"},
+                  "part"   = {"attr3"},
+                  "fill"   = {"attr4"},
+                  "hash"   = {"attr5"},
                 }
             })
             -- get table
@@ -99,21 +103,27 @@ server {
 
 ## Parameters
 
+### mode
+
+- whitelist
+- blacklist
+
 ### mask_part_string
 
 ### mask_part_length
 
-### mask_all_string
+### mask_fill_string
 
 ### mask_hash_seed
 
-### mask_fields
+### max_field_length
+
+### fields
 
 - operation
     - part
-    - all
+    - fill
     - hash
-    - trim
 
 ## For Developer
 
