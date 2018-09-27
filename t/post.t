@@ -28,7 +28,7 @@ __DATA__
                 mode = "whitelist",
                 mask_part_string = "*",
                 mask_part_length = 2,
-                mask_all_string  = "*CSTMASK*",
+                mask_fill_string = "*CSTMASK*",
                 mask_hash_seed   = "hogefugapiyo",
                 fields = {
                   origin = {"attr1"},
@@ -52,7 +52,7 @@ qq{POST /mask\n\r
 attr1=hogeeee&attr2=fugaaaa&attr3=piyoooo&attr4=fooooo&attr5=barrrrr\r\r
 }
 --- response_body
-attr5=d4e511badd25d97eaec12ab18b6ca7009d118a34&attr1=hogeeee&attr3=pi*****&attr4=-
+attr5=d4e511badd25d97eaec12ab18b6ca7009d118a34&attr1=hogeeee&attr3=pi*****&attr4=*CSTMASK*
 --- no_error_log
 [error]
 

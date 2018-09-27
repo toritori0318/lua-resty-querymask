@@ -28,10 +28,11 @@ __DATA__
                 mode = "blacklist",
                 mask_part_string = "*",
                 mask_part_length = 2,
-                mask_all_string  = "*CSTMASK*",
+                mask_fill_string = "*CSTMASK*",
                 mask_hash_seed   = "hogefugapiyo",
                 fields = {
                   part   = {"attr3"},
+                  fill   = {"attr4"},
                   hash   = {"attr5"},
                 }
             })
@@ -46,7 +47,7 @@ __DATA__
 --- request
     GET /mask?attr1=hogeeee&attr2=fugaaaa&attr3=piyoooo&attr4=fooooo&attr5=barrrrr
 --- response_body
-attr5=d4e511badd25d97eaec12ab18b6ca7009d118a34&attr2=fugaaaa&attr1=hogeeee&attr4=fooooo&attr3=pi*****
+attr5=d4e511badd25d97eaec12ab18b6ca7009d118a34&attr2=fugaaaa&attr1=hogeeee&attr4=*CSTMASK*&attr3=pi*****
 --- no_error_log
 [error]
 
