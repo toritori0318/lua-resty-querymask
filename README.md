@@ -18,7 +18,7 @@ server {
     location /mask {
         content_by_lua_block {
             local querymask = require "resty.querymask"
-            q = querymask:new({
+            local q = querymask:new({
                 mode = "writelist",
                 mask_part_string = "*",
                 mask_part_length = 3,
@@ -26,10 +26,10 @@ server {
                 mask_hash_seed   = "hogefugapiyo",
                 max_field_length = 512,
                 fields = {
-                  "origin" = {"attr1", "attr2"},
-                  "part"   = {"attr3"},
-                  "fill"   = {"attr4"},
-                  "hash"   = {"attr5"},
+                  origin = {"attr1", "attr2"},
+                  part   = {"attr3"},
+                  fill   = {"attr4"},
+                  hash   = {"attr5"},
                 }
             })
             -- get table
@@ -70,7 +70,7 @@ server {
     location /mask {
         content_by_lua_block {
             local querymask = require "resty.querymask"
-            q = querymask:new({
+            local q = querymask:new({
                 mode = "writelist",
                 mask_part_string = "*",
                 mask_part_length = 3,
@@ -78,10 +78,10 @@ server {
                 mask_hash_seed   = "hogefugapiyo",
                 max_field_length = 512,
                 fields = {
-                  "origin" = {"attr1", "attr2"},
-                  "part"   = {"attr3"},
-                  "fill"   = {"attr4"},
-                  "hash"   = {"attr5"},
+                  origin = {"attr1", "attr2"},
+                  part   = {"attr3"},
+                  fill   = {"attr4"},
+                  hash   = {"attr5"},
                 }
             })
             -- get table
