@@ -33,9 +33,9 @@ server {
                 }
             })
             -- get table
-            masked_query_table  = q.mask_query_table()
+            masked_query_table  = q:mask_query_table()
             -- get string
-            masked_query_string = q.mask_query_string()
+            masked_query_string = q:mask_query_string()
 
             ngx.header.content_type = "text/plain"
 
@@ -44,6 +44,38 @@ server {
             --   curl 'http://localhost/mask?attr1=hogeeee&attr2=fugaaaa&attr3=piyoooo&attr4=fooooo&attr5=barrrrr'
             -- 
             --   attr1=hogeeee&attr2=fugaaaa&attr3=piy****&attr4=*MASK*&attr5=eoroiaweuroajejrfalwjreoaijrejwaerwaer'
+        }
+    }
+
+    # curl 'http://localhost/get_hash?data=eoroiaweuroajejrfalwjreoaijrejwaerwaer
+    location /get_hash {
+        allow xxx.xxx.xxx.xxx;
+        deny all;
+
+        content_by_lua_block {
+            local data = ngx.req.get_uri_args().data
+
+            local querymask = require "resty.querymask"
+            local q = querymask:new({
+                mode = "writelist",
+                mask_part_string = "*",
+                mask_part_length = 3,
+                mask_fill_string = "*MASK*",
+                mask_hash_seed   = "hogefugapiyo",
+                max_field_length = 512,
+                fields = {
+                  origin = {"attr1", "attr2"},
+                  part   = {"attr3"},
+                  fill   = {"attr4"},
+                  hash   = {"attr5"},
+                }
+            })
+            -- get hash
+            local data_hash = q:get_hash(data)
+
+            ngx.header.content_type = "text/plain"
+
+            ngx.say(data_hash)
         }
     }
 }

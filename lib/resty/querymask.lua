@@ -59,6 +59,10 @@ function _M.get_query_data(self)
   return data
 end
 
+function _M.get_hash(self, data)
+  return self:_mask_hash(data)
+end
+
 function _M._mask_part(self, data)
   local data_length = data:len()
   if data_length <= self.mask_part_length then
